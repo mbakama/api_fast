@@ -17,6 +17,7 @@ class Day(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     date = Column(Date)
+    title = Column(String, nullable=True)
     month_id = Column(Integer, ForeignKey("months.id"))
     special_event = Column(Text, nullable=True)
     
@@ -43,4 +44,4 @@ class Book(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(200))
     author = Column(String(100))
-    url = Column(String(255)) 
+    url = Column(String(255))
