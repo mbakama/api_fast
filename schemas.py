@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from typing import List, Optional
-from datetime import date, datetime
+from typing import List, Optional, TypeVar, Generic
+from datetime import date
 
 # ===================================================================
 # SCHEMAS FOR BOOK
@@ -103,11 +103,31 @@ class Month(MonthBase):
 # SCHEMAS FOR COMPLEX RESPONSES
 # ===================================================================
 
+class Event(BaseModel):
+    date: date
+    event: str
+
 class MonthlyReadingsResponse(BaseModel):
+    id: int
     month: str
     count: int
     readings: List[Reading]
 
-# Update forward references to resolve circular dependencies
-Month.model_rebuild()
-Day.model_rebuild()
+T = TypeVar('T')
+
+class APIResponse(BaseModel, Generic[T]):
+    code: int = 200
+    message: str = "Success"
+    data: Optional[T] = None
+
+class DailyReadingsCreate(BaseModel):
+    date: date
+    title: Optional[str] = None
+    month_id: int
+    morning_verse: str
+    morning_reference: Optional[str] = None
+    morning_author: str
+    evening_verse: str
+    evening_reference: Optional[str] = None
+    evening_author: str
+
