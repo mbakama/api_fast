@@ -5,6 +5,7 @@ import models
 import schemas
 from database import SessionLocal, engine
 from datetime import date
+from seed_data import get_day_info_from_gregorian, get_today_bahai_info, gregorian_to_bahai_date, get_feast_info
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -247,3 +248,92 @@ def update_book(book_id: int, book: schemas.BookUpdate, db: Session = Depends(ge
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Erreur lors de la mise à jour: {str(e)}")
+
+# Nouveaux endpoints pour la conversion de dates Baha'i
+
+@app.get("/bahai/today", summary="Informations Baha'i du jour actuel")
+def get_today_bahai():
+    """
+    Retourne les informations du jour actuel au format Baha'i.
+    Exemple: "26 SEP - 1 Asmá' (Noms - 9ème mois)"
+    """
+    try:
+        info = get_today_bahai_info()
+        feast_info = get_feast_info()
+        return schemas.APIResponse(
+            code=200,
+            message="Informations du jour actuel",
+            data={
+                "date_info": info, 
+                "gregorian_date": date.today().isoformat(),
+                "feast": feast_info
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des informations: {str(e)}")
+
+@app.get("/bahai/date/{date_str}", summary="Conversion d'une date grégorienne vers le calendrier Baha'i")
+def get_bahai_date_info(date_str: str):
+    """
+    Convertit une date grégorienne (format YYYY-MM-DD) vers le calendrier Baha'i.
+    Retourne les informations formatées.
+    """
+    try:
+        gregorian_date = date.fromisoformat(date_str)
+        info = get_day_info_from_gregorian(gregorian_date)
+        feast_info = get_feast_info(gregorian_date)
+        bahai_day, bahai_month, bahai_year = gregorian_to_bahai_date(gregorian_date)
+        
+        return schemas.APIResponse(
+            code=200,
+            message=f"Conversion de la date {date_str}",
+            data={
+                "gregorian_date": date_str,
+                "formatted_info": info,
+                "feast": feast_info,
+                "bahai_date": {
+                    "day": bahai_day,
+                    "month": bahai_month,
+                    "year": bahai_year
+                }
+            }
+        )
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Format de date invalide. Utilisez YYYY-MM-DD")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la conversion: {str(e)}")
+
+@app.get("/bahai/convert", summary="Conversion avec paramètres de requête")
+def convert_gregorian_to_bahai(year: int, month: int, day: int):
+    """
+    Convertit une date grégorienne vers le calendrier Baha'i en utilisant des paramètres séparés.
+    """
+    try:
+        gregorian_date = date(year, month, day)
+        info = get_day_info_from_gregorian(gregorian_date)
+        feast_info = get_feast_info(gregorian_date)
+        bahai_day, bahai_month, bahai_year = gregorian_to_bahai_date(gregorian_date)
+        
+        return schemas.APIResponse(
+            code=200,
+            message=f"Conversion de la date {gregorian_date}",
+            data={
+                "gregorian_date": {
+                    "year": year,
+                    "month": month,
+                    "day": day,
+                    "iso_format": gregorian_date.isoformat()
+                },
+                "formatted_info": info,
+                "feast": feast_info,
+                "bahai_date": {
+                    "day": bahai_day,
+                    "month": bahai_month,
+                    "year": bahai_year
+                }
+            }
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Date invalide: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la conversion: {str(e)}")
