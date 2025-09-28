@@ -23,6 +23,15 @@ def get_db():
     finally:
         db.close()
 
+@app.get("/readings/today", response_model=schemas.APIResponse[List[schemas.Reading]])
+def get_readings_today(db: Session = Depends(get_db)):
+    today = date.today()
+    day = db.query(models.Day).filter(models.Day.date == today).first()
+    if day is None:
+        return schemas.APIResponse(code=404, message="No readings found for today", data=[])
+    return schemas.APIResponse(data=day.readings)
+
+
 @app.get("/readings/{date}", response_model=schemas.APIResponse[List[schemas.Reading]])
 def get_readings_by_date(date_str: str, db: Session = Depends(get_db)):
     try:
