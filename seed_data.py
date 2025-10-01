@@ -1,6 +1,6 @@
 from database import SessionLocal, engine
 import models
-from datetime import date, datetime
+from datetime import date
 
 def seed_months():
     db = SessionLocal()
@@ -18,7 +18,7 @@ def seed_months():
                 (8, "Kamál", "Perfection"), 
                 (9, "Asmá’", "Noms"),
                 (10, "‘Izzat", "Puissance"), 
-                (11, "Ma shíyyat", "Volonté"),
+                (11, "Mashíyyat", "Volonté"),
                  (12, "‘Ilm", "Savoir"),
                 (13, "Qudrat", "Pouvoir"), 
                 (14, "Qawl", "Parole"), 
@@ -72,7 +72,7 @@ def seed_books():
 def gregorian_to_bahai_date(gregorian_date: date) -> tuple:
     """
     Convertit une date grégorienne en date Baha'i.
-    Basé sur le fait que le 26 septembre 2025 = 1 Asmá' 182
+    Basé sur le fait que le 27 septembre 2025 = 1 Mashíyyat 182
     
     Args:
         gregorian_date: Date grégorienne
@@ -80,10 +80,10 @@ def gregorian_to_bahai_date(gregorian_date: date) -> tuple:
     Returns:
         tuple: (jour_bahai, mois_bahai, année_bahai)
     """
-    # Point de référence: 26 septembre 2025 = 1 Asmá' 182 (9ème mois, année 182)
-    reference_gregorian = date(2025, 9, 26)
+    # Point de référence: 27 septembre 2025 = 1 Mashíyyat 182 (11ème mois, année 182)
+    reference_gregorian = date(2025, 9, 27)
     reference_bahai_day = 1
-    reference_bahai_month = 9  # Asmá'
+    reference_bahai_month = 11  # Mashíyyat
     reference_bahai_year = 182
     
     # Calculer la différence en jours
