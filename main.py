@@ -5,7 +5,8 @@ import models
 import schemas
 from database import SessionLocal, engine
 from datetime import date, datetime
-from seed_data import get_day_info_from_gregorian, get_today_bahai_info, gregorian_to_bahai_date, get_feast_info
+from zoneinfo import ZoneInfo
+from seed_data import get_day_info_from_gregorian, gregorian_to_bahai_date, get_feast_info
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -14,6 +15,13 @@ app = FastAPI(
     description="API pour les lectures quotidiennes bahá'íes",
     version="1.0.0"
 )
+
+# Fuseau horaire pour Kinshasa (UTC+1)
+TIMEZONE = ZoneInfo("Africa/Kinshasa")
+
+def get_current_date() -> date:
+    """Retourne la date actuelle dans le fuseau horaire de Kinshasa"""
+    return datetime.now(TIMEZONE).date()
 
 # Dépendance
 def get_db():
@@ -25,8 +33,8 @@ def get_db():
 
 @app.get("/readings/today", response_model=schemas.APIResponse[schemas.Reading])
 def get_readings_today(db: Session = Depends(get_db)):
-    today = date.today()
-    now = datetime.now()
+    today = get_current_date()
+    now = datetime.now(TIMEZONE)
     current_hour = now.hour
     
     # Déterminer la période: matin (0h-12h59) ou soir (13h-23h59)
@@ -279,14 +287,15 @@ def get_today_bahai():
     Exemple: "26 SEP - 1 Asmá' (Noms - 9ème mois)"
     """
     try:
-        info = get_today_bahai_info()
-        feast_info = get_feast_info()
+        current_date = get_current_date()
+        info = get_day_info_from_gregorian(current_date)
+        feast_info = get_feast_info(current_date)
         return schemas.APIResponse(
             code=200,
             message="Informations du jour actuel",
             data={
                 "date_info": info, 
-                "gregorian_date": date.today().isoformat(),
+                "gregorian_date": current_date.isoformat(),
                 "feast": feast_info
             }
         )
