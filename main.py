@@ -52,7 +52,7 @@ def get_readings_today(db: Session = Depends(get_db)):
     return schemas.APIResponse(data=reading, message=f"Reading for {period}")
 
 
-@app.get("/readings/{date}", response_model=schemas.APIResponse[List[schemas.Reading]])
+@app.get("/readings/{date_str}", response_model=schemas.APIResponse[List[schemas.Reading]])
 def get_readings_by_date(date_str: str, db: Session = Depends(get_db)):
     try:
         requested_date = date.fromisoformat(date_str)
