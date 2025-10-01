@@ -4,7 +4,7 @@ from typing import List
 import models
 import schemas
 from database import SessionLocal, engine
-from datetime import date
+from datetime import date, datetime
 from seed_data import get_day_info_from_gregorian, get_today_bahai_info, gregorian_to_bahai_date, get_feast_info
 
 models.Base.metadata.create_all(bind=engine)
@@ -23,13 +23,25 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/readings/today", response_model=schemas.APIResponse[List[schemas.Reading]])
+@app.get("/readings/today", response_model=schemas.APIResponse[schemas.Reading])
 def get_readings_today(db: Session = Depends(get_db)):
     today = date.today()
+    now = datetime.now()
+    current_hour = now.hour
+    
+    # Déterminer la période: matin (0h-12h59) ou soir (13h-23h59)
+    period = "matin" if current_hour < 13 else "soir"
+    
     day = db.query(models.Day).filter(models.Day.date == today).first()
     if day is None:
-        return schemas.APIResponse(code=404, message="No readings found for today", data=[])
-    return schemas.APIResponse(data=day.readings)
+        return schemas.APIResponse(code=404, message="No readings found for today", data=None)
+    
+    # Filtrer pour obtenir uniquement la lecture de la période actuelle
+    reading = next((r for r in day.readings if r.period == period), None)
+    if reading is None:
+        return schemas.APIResponse(code=404, message=f"No reading found for period '{period}'", data=None)
+    
+    return schemas.APIResponse(data=reading, message=f"Reading for {period}")
 
 
 @app.get("/readings/{date}", response_model=schemas.APIResponse[List[schemas.Reading]])
