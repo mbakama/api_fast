@@ -1,56 +1,65 @@
-# Mon API FastAPI
+# API FastAPI — Lectures Bahá'íes
 
-Une API simple créée avec FastAPI qui permet de gérer une liste d'items.
+API FastAPI avec SQLAlchemy. Supporte SQLite en local et Postgres (Supabase) en prod.
 
 ## Installation
 
-1. Assurez-vous d'avoir Python 3.8+ installé
-2. Créez un environnement virtuel :
+1. Python 3.10+
+2. Environnement virtuel
    ```bash
-   python -m venv .venv
+   python -m venv .venv && source .venv/bin/activate
    ```
-3. Activez l'environnement virtuel :
-   - Windows :
-     ```bash
-     .\.venv\Scripts\activate
-     ```
-   - Linux/Mac :
-     ```bash
-     source .venv/bin/activate
-     ```
-4. Installez les dépendances :
+3. Dépendances
    ```bash
    pip install -r requirements.txt
    ```
 
-## Lancement de l'application
+## Configuration (Supabase / Postgres)
+
+Créez un fichier `.env` à la racine en vous basant sur l'exemple ci-dessous.
 
 ```bash
-python main.py
+# Exemple .env
+# URL de connexion Postgres (Supabase -> Project Settings -> Database -> Connection string)
+# Formats acceptés:
+# - postgresql://USER:PASSWORD@HOST:PORT/DB
+# - postgresql+psycopg://USER:PASSWORD@HOST:PORT/DB
+SUPABASE_DB_URL=postgresql://USER:PASSWORD@HOST:6543/postgres
+
+# Alternative générique
+# DATABASE_URL=postgresql://USER:PASSWORD@HOST:6543/postgres
 ```
 
-L'application sera accessible à l'adresse : http://localhost:8000
+En absence de `SUPABASE_DB_URL` ou `DATABASE_URL`, l'app utilisera `sqlite:///./bahai_readings.db`.
 
-## Documentation de l'API
+## Lancer l'application (auto-reload)
 
-Une fois l'application lancée, vous pouvez accéder à :
-- Documentation Swagger UI : http://localhost:8000/docs
-- Documentation ReDoc : http://localhost:8000/redoc
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
 
-## Endpoints disponibles
+Accès:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
-- `GET /` : Message de bienvenue
-- `GET /items/` : Liste tous les items
-- `GET /items/{item_id}` : Récupère un item spécifique
-- `POST /items/` : Crée un nouvel item
+## Base de données et migrations (Alembic)
 
-## Exemple d'utilisation
+Alembic est configuré pour lire l'URL depuis l'environnement.
 
-Pour créer un nouvel item, envoyez une requête POST à `/items/` avec un corps JSON comme ceci :
-```json
-{
-    "name": "Mon Item",
-    "description": "Description de mon item",
-    "price": 29.99
-}
-``` 
+- Générer les tables (si vides) via l'app: au premier démarrage, `main.py` appelle `Base.metadata.create_all`.
+- Seed (optionnel):
+  ```bash
+  python seed_data.py
+  ```
+- Migrations:
+  ```bash
+  # Révision auto à partir des modèles
+  alembic revision --autogenerate -m "message"
+  # Appliquer
+  alembic upgrade head
+  ```
+
+## Notes
+
+- L'URL fournie par Supabase peut être `postgres://...` ou `postgresql://...`. L'app convertit automatiquement en `postgresql+psycopg://` pour utiliser `psycopg` v3.
+- Sur SQLite, `check_same_thread` est géré automatiquement.
