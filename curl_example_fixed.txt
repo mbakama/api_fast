@@ -1,0 +1,15 @@
+curl -X 'POST' \
+  'http://localhost:8000/readings/daily/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "date": "2025-10-02",
+  "title": "2 OCTOBRE - 6 Mashiyyat (Volonte - 11eme mois)",
+  "month_id": 0,
+  "morning_verse": "L'\''humanite flechit aujourd'\''hui sous le poids de l'\''inquietude, du chagrin et de la douleur. Personne n'\''y echappe. Le monde est une vallee de larmes; mais, graces a Dieu, le remede est a notre portee. Que notre coeur se detourne de la matiere pour vivre dans le monde de l'\''esprit. Seul ce monde pleut nous donner la liberte. Si nous sommes entoures de difficultes, il nous suffit d'\''invoquer Dieu et, par sa grace infinie, nous serons assistes [...] Quand nos pensees sont remplies par l'\''amertume vis-a-vis de ce monde, tournons notre esprit vers la douceur de la compassion divine, et un calme celeste nous envahira. Si nous sommes emprisonnes sur cette terre, notre esprit peut s'\''elever vers les cieux, et nous serons vraiment libres.",
+  "morning_reference": "Causeries d'\''Abdu'\''l-Baha a Paris, p. 93-94",
+  "morning_author": "Abdu'\''l-Baha",
+  "evening_verse": "Chaque verset revele par cette Plume est un portail brillant et etincelant qui laisse voir les gloires d'\''une vie sainte et pieuse, d'\''actes purs et irreprochables. Les appels et le message que nous avons livres ne furent jamais destines a un seul pays ou a un seul peuple. L'\''humanite entiere doit fermement adherer a ce qui lui a ete revele et accorde. C'\''est alors, et alors seulement, qu'\''elle atteindra la vraie liberte. La terre entiere est illuminee de la gloire resplendissante de la revelation de Dieu [...] Voyez comme la plupart des hommes ont recu la faculte d'\''entendre la parole tres glorifiee de Dieu, parole dont doivent dependre la reunion et la resurrection spirituelles de tous les hommes.",
+  "evening_reference": "Les Tablettes de Baha'\''u'\''llah, p. 93",
+  "evening_author": "Baha'\''u'\''llah"
+}'

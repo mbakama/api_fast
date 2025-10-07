@@ -1,0 +1,76 @@
+Defaulting to user installation because normal site-packages is not writeable
+Collecting supabase
+  Downloading supabase-2.20.0-py3-none-any.whl.metadata (4.5 kB)
+Collecting realtime (from supabase)
+  Downloading realtime-2.20.0-py3-none-any.whl.metadata (6.9 kB)
+Collecting supabase-functions (from supabase)
+  Downloading supabase_functions-2.20.0-py3-none-any.whl.metadata (2.2 kB)
+Collecting storage3 (from supabase)
+  Downloading storage3-2.20.0-py3-none-any.whl.metadata (2.0 kB)
+Collecting supabase-auth (from supabase)
+  Downloading supabase_auth-2.20.0-py3-none-any.whl.metadata (6.3 kB)
+Collecting postgrest (from supabase)
+  Downloading postgrest-2.20.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting httpx<0.29,>=0.26 (from supabase)
+  Using cached httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Requirement already satisfied: anyio in c:\users\hector\appdata\roaming\python\python312\site-packages (from httpx<0.29,>=0.26->supabase) (3.7.1)
+Requirement already satisfied: certifi in c:\users\hector\appdata\roaming\python\python312\site-packages (from httpx<0.29,>=0.26->supabase) (2024.8.30)
+Collecting httpcore==1.* (from httpx<0.29,>=0.26->supabase)
+  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Requirement already satisfied: idna in c:\users\hector\appdata\roaming\python\python312\site-packages (from httpx<0.29,>=0.26->supabase) (3.10)
+Collecting h11>=0.16 (from httpcore==1.*->httpx<0.29,>=0.26->supabase)
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting deprecation>=2.1.0 (from postgrest->supabase)
+  Downloading deprecation-2.1.0-py2.py3-none-any.whl.metadata (4.6 kB)
+Requirement already satisfied: pydantic<3.0,>=1.9 in c:\users\hector\appdata\roaming\python\python312\site-packages (from postgrest->supabase) (2.11.9)
+Collecting typing-extensions>=4.14.0 (from realtime->supabase)
+  Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+Requirement already satisfied: websockets<16,>=11 in c:\users\hector\appdata\roaming\python\python312\site-packages (from realtime->supabase) (15.0.1)
+Collecting pyjwt>=2.10.1 (from pyjwt[crypto]>=2.10.1->supabase-auth->supabase)
+  Using cached PyJWT-2.10.1-py3-none-any.whl.metadata (4.0 kB)
+Collecting strenum>=0.4.15 (from supabase-functions->supabase)
+  Downloading StrEnum-0.4.15-py3-none-any.whl.metadata (5.3 kB)
+Requirement already satisfied: packaging in c:\users\hector\appdata\roaming\python\python312\site-packages (from deprecation>=2.1.0->postgrest->supabase) (24.2)
+Collecting h2<5,>=3 (from httpx[http2]<0.29,>=0.26->postgrest->supabase)
+  Downloading h2-4.3.0-py3-none-any.whl.metadata (5.1 kB)
+Requirement already satisfied: annotated-types>=0.6.0 in c:\users\hector\appdata\roaming\python\python312\site-packages (from pydantic<3.0,>=1.9->postgrest->supabase) (0.7.0)
+Requirement already satisfied: pydantic-core==2.33.2 in c:\users\hector\appdata\roaming\python\python312\site-packages (from pydantic<3.0,>=1.9->postgrest->supabase) (2.33.2)
+Requirement already satisfied: typing-inspection>=0.4.0 in c:\users\hector\appdata\roaming\python\python312\site-packages (from pydantic<3.0,>=1.9->postgrest->supabase) (0.4.1)
+Requirement already satisfied: cryptography>=3.4.0 in c:\users\hector\appdata\roaming\python\python312\site-packages (from pyjwt[crypto]>=2.10.1->supabase-auth->supabase) (44.0.0)
+Requirement already satisfied: sniffio>=1.1 in c:\users\hector\appdata\roaming\python\python312\site-packages (from anyio->httpx<0.29,>=0.26->supabase) (1.3.1)
+Requirement already satisfied: cffi>=1.12 in c:\users\hector\appdata\roaming\python\python312\site-packages (from cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->supabase-auth->supabase) (1.17.1)
+Collecting hyperframe<7,>=6.1 (from h2<5,>=3->httpx[http2]<0.29,>=0.26->postgrest->supabase)
+  Downloading hyperframe-6.1.0-py3-none-any.whl.metadata (4.3 kB)
+Collecting hpack<5,>=4.1 (from h2<5,>=3->httpx[http2]<0.29,>=0.26->postgrest->supabase)
+  Downloading hpack-4.1.0-py3-none-any.whl.metadata (4.6 kB)
+Requirement already satisfied: pycparser in c:\users\hector\appdata\roaming\python\python312\site-packages (from cffi>=1.12->cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->supabase-auth->supabase) (2.22)
+Downloading supabase-2.20.0-py3-none-any.whl (16 kB)
+Using cached httpx-0.28.1-py3-none-any.whl (73 kB)
+Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+Downloading postgrest-2.20.0-py3-none-any.whl (22 kB)
+Downloading realtime-2.20.0-py3-none-any.whl (21 kB)
+Downloading storage3-2.20.0-py3-none-any.whl (18 kB)
+Downloading supabase_auth-2.20.0-py3-none-any.whl (43 kB)
+Downloading supabase_functions-2.20.0-py3-none-any.whl (8.5 kB)
+Downloading deprecation-2.1.0-py2.py3-none-any.whl (11 kB)
+Using cached PyJWT-2.10.1-py3-none-any.whl (22 kB)
+Downloading StrEnum-0.4.15-py3-none-any.whl (8.9 kB)
+Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+Using cached h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading h2-4.3.0-py3-none-any.whl (61 kB)
+Downloading hpack-4.1.0-py3-none-any.whl (34 kB)
+Downloading hyperframe-6.1.0-py3-none-any.whl (13 kB)
+Installing collected packages: strenum, typing-extensions, pyjwt, hyperframe, hpack, h11, deprecation, httpcore, h2, httpx, realtime, supabase-functions, supabase-auth, storage3, postgrest, supabase
+  Attempting uninstall: typing-extensions
+    Found existing installation: typing_extensions 4.12.2
+    Uninstalling typing_extensions-4.12.2:
+      Successfully uninstalled typing_extensions-4.12.2
+  Attempting uninstall: pyjwt
+    Found existing installation: PyJWT 2.10.0
+    Uninstalling PyJWT-2.10.0:
+      Successfully uninstalled PyJWT-2.10.0
+  Attempting uninstall: h11
+    Found existing installation: h11 0.14.0
+    Uninstalling h11-0.14.0:
+      Successfully uninstalled h11-0.14.0
+Successfully installed deprecation-2.1.0 h11-0.16.0 h2-4.3.0 hpack-4.1.0 httpcore-1.0.9 httpx-0.28.1 hyperframe-6.1.0 postgrest-2.20.0 pyjwt-2.10.1 realtime-2.20.0 storage3-2.20.0 strenum-0.4.15 supabase-2.20.0 supabase-auth-2.20.0 supabase-functions-2.20.0 typing-extensions-4.15.0

@@ -1,0 +1,11 @@
+{
+  "date": "2025-10-02",
+  "title": "Test depuis Swagger UI",
+  "month_id": 1,
+  "morning_verse": " Ceci est un test de lecture du matin avec des caractères français et des apostrophes d'Abdu'l-Baha. ",
+  "morning_reference": "Causeries d'Abdu'l-Baha à Paris",
+  "morning_author": "Abdu'l-Baha",
+  "evening_verse": " Ceci est un test de lecture du soir avec tous les caractères spéciaux nécessaires. ",
+  "evening_reference": "Les Écrits de Bahá'u'lláh",
+  "evening_author": "Bahá'u'lláh"
+}

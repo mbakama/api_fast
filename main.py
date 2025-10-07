@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 import models
@@ -7,14 +8,44 @@ from database import SessionLocal, engine
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 from seed_data import get_day_info_from_gregorian, gregorian_to_bahai_date, get_feast_info
+import os
+from dotenv import load_dotenv
+from supabase import create_client, Client
+
+# Charger les variables d'environnement
+load_dotenv()
+
+# Configuration Supabase
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Initialiser le client Supabase
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="API Lectures Bahá'íes",
-    description="API pour les lectures quotidiennes bahá'íes",
+    description="API pour les lectures quotidiennes bahá'íes avec support Supabase",
     version="1.0.0"
 )
+
+# Configuration CORS pour permettre l'accès depuis Swagger UI
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # En développement, permet toutes les origines
+    allow_credentials=True,
+    allow_methods=["*"],  # Permet toutes les méthodes HTTP
+    allow_headers=["*"],  # Permet tous les headers
+)
+
+# Configuration pour supporter les caractères Unicode
+@app.middleware("http")
+async def add_unicode_support(request, call_next):
+    response = await call_next(request)
+    # S'assurer que la réponse supporte UTF-8
+    response.headers["Content-Type"] = "application/json; charset=utf-8"
+    return response
 
 # Fuseau horaire pour Kinshasa (UTC+1)
 TIMEZONE = ZoneInfo("Africa/Kinshasa")
@@ -94,14 +125,28 @@ def get_books(db: Session = Depends(get_db)):
 
 @app.post("/readings/daily/", response_model=schemas.APIResponse[schemas.Day], status_code=status.HTTP_201_CREATED, summary="Create daily readings (morning and evening)")
 def create_daily_readings(daily_readings: schemas.DailyReadingsCreate, db: Session = Depends(get_db)):
+    """
+    Créer une nouvelle journée avec ses lectures du matin et du soir.
+    Accepte tous les caractères Unicode (accents, apostrophes, etc.)
+    """
     month = db.query(models.Month).filter(models.Month.id == daily_readings.month_id).first()
     if not month:
         return schemas.APIResponse(code=404, message=f"Month with id {daily_readings.month_id} not found.")
 
-    day = db.query(models.Day).filter(models.Day.date == daily_readings.date).first()
+    # Conversion de la date si elle est une string
+    if isinstance(daily_readings.date, str):
+        try:
+            from datetime import datetime
+            reading_date = datetime.strptime(daily_readings.date, '%Y-%m-%d').date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Format de date invalide: {daily_readings.date}. Utilisez YYYY-MM-DD")
+    else:
+        reading_date = daily_readings.date
+
+    day = db.query(models.Day).filter(models.Day.date == reading_date).first()
     if not day:
         day = models.Day(
-            date=daily_readings.date,
+            date=reading_date,
             title=daily_readings.title,
             month_id=month.id
         )
@@ -110,12 +155,13 @@ def create_daily_readings(daily_readings: schemas.DailyReadingsCreate, db: Sessi
     elif daily_readings.title:
         day.title = daily_readings.title
 
+    # Création des lectures avec gestion des caractères Unicode
     morning_reading = models.Reading(
         period="matin",
         content=daily_readings.morning_verse,
         author=daily_readings.morning_author,
         reference=daily_readings.morning_reference,
-        source_book=daily_readings.morning_reference,
+        source_book=daily_readings.morning_reference or "Non spécifié",
         day_id=day.id
     )
     evening_reading = models.Reading(
@@ -123,11 +169,11 @@ def create_daily_readings(daily_readings: schemas.DailyReadingsCreate, db: Sessi
         content=daily_readings.evening_verse,
         author=daily_readings.evening_author,
         reference=daily_readings.evening_reference,
-        source_book=daily_readings.evening_reference,
+        source_book=daily_readings.evening_reference or "Non spécifié",
         day_id=day.id
     )
     db.add_all([morning_reading, evening_reading])
-    
+
     try:
         db.commit()
         db.refresh(day)
@@ -367,3 +413,57 @@ def convert_gregorian_to_bahai(year: int, month: int, day: int):
         raise HTTPException(status_code=400, detail=f"Date invalide: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la conversion: {str(e)}")
+
+# =================== ENDPOINTS SUPABASE ===================
+
+@app.get("/supabase/status")
+def get_supabase_status():
+    """Vérifier le statut de la connexion Supabase"""
+    if supabase is None:
+        return {"status": "error", "message": "Supabase n'est pas configuré"}
+
+    try:
+        # Test simple de connexion
+        response = supabase.table('test_data').select("*").limit(1).execute()
+        return {"status": "connected", "message": "Connexion Supabase réussie"}
+    except Exception as e:
+        return {"status": "error", "message": f"Erreur de connexion: {str(e)}"}
+
+@app.get("/supabase/insert-test")
+def insert_test_data():
+    """Insérer des données de test dans Supabase"""
+    if supabase is None:
+        raise HTTPException(status_code=500, detail="Supabase n'est pas configuré")
+
+    try:
+        # Données de test
+        test_data = {
+            "test_field": "Hello from FastAPI",
+            "created_at": datetime.now().isoformat()
+        }
+
+        # Insérer dans une table de test (à créer dans Supabase)
+        response = supabase.table('test_data').insert(test_data).execute()
+
+        return {
+            "status": "success",
+            "message": "Données insérées avec succès",
+            "data": response.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'insertion: {str(e)}")
+
+@app.get("/supabase/test-data")
+def get_test_data():
+    """Récupérer les données de test depuis Supabase"""
+    if supabase is None:
+        raise HTTPException(status_code=500, detail="Supabase n'est pas configuré")
+
+    try:
+        response = supabase.table('test_data').select('*').execute()
+        return {
+            "status": "success",
+            "data": response.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération: {str(e)}")

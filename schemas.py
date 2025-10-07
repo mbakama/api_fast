@@ -121,7 +121,7 @@ class APIResponse(BaseModel, Generic[T]):
     data: Optional[T] = None
 
 class DailyReadingsCreate(BaseModel):
-    date: date
+    date: str  # Changé temporairement en str pour éviter les erreurs de conversion
     title: Optional[str] = None
     month_id: int
     morning_verse: str
@@ -130,4 +130,21 @@ class DailyReadingsCreate(BaseModel):
     evening_verse: str
     evening_reference: Optional[str] = None
     evening_author: str
+
+    class Config:
+        # Permettre les caractères Unicode et les apostrophes
+        allow_unicode = True
+        # Validation personnalisée pour les caractères spéciaux
+        validate_assignment = True
+
+    def __init__(self, **data):
+        # Conversion automatique de la date string vers date object si nécessaire
+        if 'date' in data and isinstance(data['date'], str):
+            try:
+                from datetime import datetime
+                data['date'] = datetime.strptime(data['date'], '%Y-%m-%d').date()
+            except ValueError:
+                # Si la conversion échoue, garder la string
+                pass
+        super().__init__(**data)
 

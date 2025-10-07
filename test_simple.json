@@ -1,0 +1,11 @@
+{
+  "date": "2025-10-02",
+  "title": "Test Simple",
+  "month_id": 1,
+  "morning_verse": "Test matin simple",
+  "morning_reference": "Test reference",
+  "morning_author": "Test Author",
+  "evening_verse": "Test soir simple",
+  "evening_reference": "Test reference soir",
+  "evening_author": "Test Author Soir"
+}
