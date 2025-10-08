@@ -1,19 +1,11 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine  # pyright: ignore[reportMissingImports]
+from sqlalchemy.ext.declarative import declarative_base  # pyright: ignore[reportMissingImports]
+from sqlalchemy.orm import sessionmaker  # pyright: ignore[reportMissingImports]
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # pyright: ignore[reportMissingImports]
 
-# Charger les variables d'environnement
+# Charger les variables d'environnement depuis un fichier .env si présent (si présent)
 load_dotenv()
-
-try:
-    # Charge les variables d'environnement depuis un fichier .env si présent
-    from dotenv import load_dotenv
-    load_dotenv()
-except Exception:
-    # dotenv est optionnel en production
-    pass
 
 
 def _normalize_postgres_driver(url: str) -> str:
